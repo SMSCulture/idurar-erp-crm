@@ -50,6 +50,8 @@ const companyTags = [
   "Wines / Brewery",
 ];
 
+// Lifecycle stage options: Lead, MQL, SQL, Customer
+// Membership status options: active, inactive
 const initialB2bCompanies = [
   {
     id: 1,
@@ -59,7 +61,8 @@ const initialB2bCompanies = [
     city: "Miami",
     state: "FL",
     website: "https://sunsetstudiogallery.example",
-    lifecycleStage: "Lead",
+    lifecycleStage: "Lead",           // no contact
+    membershipStatus: "inactive",     // from portal
     contacts: [
       {
         id: 1,
@@ -79,7 +82,8 @@ const initialB2bCompanies = [
     city: "Fort Lauderdale",
     state: "FL",
     website: "https://arthivecollective.example",
-    lifecycleStage: "MQL",
+    lifecycleStage: "MQL",            // engaged in some way
+    membershipStatus: "inactive",
     contacts: [
       {
         id: 2,
@@ -99,7 +103,8 @@ const initialB2bCompanies = [
     city: "Miami Beach",
     state: "FL",
     website: "https://oceanfrontartmuseum.example",
-    lifecycleStage: "Customer",
+    lifecycleStage: "Customer",       // purchased from us
+    membershipStatus: "active",
     contacts: [
       {
         id: 3,
@@ -118,6 +123,8 @@ export default function DevPreview() {
   const [companies, setCompanies] = useState(initialB2bCompanies);
   const [searchText, setSearchText] = useState('');
   const [selectedTag, setSelectedTag] = useState('All tags');
+  const [lifecycleFilter, setLifecycleFilter] = useState('All stages');
+  const [membershipFilter, setMembershipFilter] = useState('All memberships');
 
   // Form state
   const [formData, setFormData] = useState({
@@ -127,6 +134,7 @@ export default function DevPreview() {
     city: '',
     state: '',
     lifecycleStage: 'Lead',
+    membershipStatus: 'inactive',
     contactFirstName: '',
     contactEmail: '',
   });
@@ -135,6 +143,16 @@ export default function DevPreview() {
   const filteredCompanies = companies.filter((company) => {
     // Filter by tag
     if (selectedTag !== 'All tags' && company.company_tag !== selectedTag) {
+      return false;
+    }
+
+    // Filter by lifecycle stage
+    if (lifecycleFilter !== 'All stages' && company.lifecycleStage !== lifecycleFilter) {
+      return false;
+    }
+
+    // Filter by membership status
+    if (membershipFilter !== 'All memberships' && company.membershipStatus !== membershipFilter) {
       return false;
     }
 
@@ -170,6 +188,7 @@ export default function DevPreview() {
       state: formData.state,
       website: '',
       lifecycleStage: formData.lifecycleStage,
+      membershipStatus: formData.membershipStatus,
       contacts: [
         {
           id: newId,
@@ -190,6 +209,7 @@ export default function DevPreview() {
       city: '',
       state: '',
       lifecycleStage: 'Lead',
+      membershipStatus: 'inactive',
       contactFirstName: '',
       contactEmail: '',
     });
@@ -246,7 +266,7 @@ export default function DevPreview() {
           <h2 style={{ marginTop: 0 }}>B2B Companies</h2>
 
           {/* Filters */}
-          <div style={{ marginBottom: 16, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+          <div style={{ marginBottom: 16, display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
             <input
               type="text"
               placeholder="Search companies…"
@@ -275,6 +295,36 @@ export default function DevPreview() {
                   {tag}
                 </option>
               ))}
+            </select>
+            <select
+              value={lifecycleFilter}
+              onChange={(e) => setLifecycleFilter(e.target.value)}
+              style={{
+                padding: '6px 8px',
+                borderRadius: 4,
+                border: '1px solid #ccc',
+                fontSize: 14,
+              }}
+            >
+              <option>All stages</option>
+              <option>Lead</option>
+              <option>MQL</option>
+              <option>SQL</option>
+              <option>Customer</option>
+            </select>
+            <select
+              value={membershipFilter}
+              onChange={(e) => setMembershipFilter(e.target.value)}
+              style={{
+                padding: '6px 8px',
+                borderRadius: 4,
+                border: '1px solid #ccc',
+                fontSize: 14,
+              }}
+            >
+              <option>All memberships</option>
+              <option>active</option>
+              <option>inactive</option>
             </select>
           </div>
 
@@ -339,7 +389,17 @@ export default function DevPreview() {
                 >
                   <option>Lead</option>
                   <option>MQL</option>
+                  <option>SQL</option>
                   <option>Customer</option>
+                </select>
+                <select
+                  name="membershipStatus"
+                  value={formData.membershipStatus}
+                  onChange={handleFormChange}
+                  style={{ padding: '6px 8px', borderRadius: 4, border: '1px solid #ccc' }}
+                >
+                  <option>active</option>
+                  <option>inactive</option>
                 </select>
                 <input
                   type="text"
@@ -384,10 +444,9 @@ export default function DevPreview() {
                 <tr>
                   <th style={thStyle}>Company Name</th>
                   <th style={thStyle}>Company Tag</th>
-                  <th style={thStyle}>Org Type</th>
                   <th style={thStyle}>City</th>
-                  <th style={thStyle}>State</th>
                   <th style={thStyle}>Lifecycle Stage</th>
+                  <th style={thStyle}>Membership Status</th>
                   <th style={thStyle}>Primary Contact</th>
                   <th style={thStyle}>Action</th>
                 </tr>
@@ -403,10 +462,9 @@ export default function DevPreview() {
                     <tr key={c.id}>
                       <td style={tdStyle}>{c.name}</td>
                       <td style={tdStyle}>{c.company_tag}</td>
-                      <td style={tdStyle}>{c.org_type}</td>
                       <td style={tdStyle}>{c.city}</td>
-                      <td style={tdStyle}>{c.state}</td>
                       <td style={tdStyle}>{c.lifecycleStage}</td>
+                      <td style={tdStyle}>{c.membershipStatus}</td>
                       <td style={tdStyle}>{primaryText}</td>
                       <td style={tdStyle}>
                         <button
@@ -453,8 +511,8 @@ const thStyle = {
   backgroundColor: '#f5f5f5',
   fontWeight: 'bold',
 };
+
 const tdStyle = {
   padding: '8px 6px',
   borderBottom: '1px solid #f0f0f0',
 };
-

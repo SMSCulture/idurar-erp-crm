@@ -36,6 +36,15 @@ app.use(compression());
 
 // Here our API Routes
 
+// Simple unauthenticated endpoints useful for previews / health checks
+app.get('/api/health', (req, res) => {
+  return res.json({ ok: true, env: process.env.NODE_ENV || 'development' });
+});
+
+app.get('/api/placeholder', (req, res) => {
+  return res.json({ message: 'Placeholder API is working', timestamp: Date.now() });
+});
+
 app.use('/api', coreAuthRouter);
 app.use('/api', adminAuth.isValidAuthToken, coreApiRouter);
 app.use('/api', adminAuth.isValidAuthToken, erpApiRouter);

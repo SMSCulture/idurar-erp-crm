@@ -4,6 +4,7 @@ import { Navigate } from 'react-router-dom';
 
 const Logout = lazy(() => import('@/pages/Logout.jsx'));
 const NotFound = lazy(() => import('@/pages/NotFound.jsx'));
+const DevPreview = lazy(() => import('@/DevPreview.jsx'));
 
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
 const Customer = lazy(() => import('@/pages/Customer'));
@@ -32,6 +33,10 @@ const About = lazy(() => import('@/pages/About'));
 let routes = {
   expense: [],
   default: [
+    {
+      path: '/dev-preview',
+      element: <DevPreview />,
+    },
     {
       path: '/login',
       element: <Navigate to="/" />,
